@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #1a0a0f;
+    color: #f5e6e8;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .stars {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0;
+  }
+
+  .star {
+    position: absolute;
+    background: #f5e6e8;
+    border-radius: 50%;
+    animation: twinkle var(--d) ease-in-out infinite;
+    opacity: 0;
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0; transform: scale(0.8); }
+    50% { opacity: var(--o); transform: scale(1.2); }
+  }
+
+  .container {
+    position: relative; z-index: 1;
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  .greeting {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .greeting-sub {
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #c9849a;
+    margin-bottom: 12px;
+  }
+
+  .greeting h1 {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 42px;
+    line-height: 1.15;
+    color: #f5e6e8;
+    margin-bottom: 16px;
+  }
+
+  .greeting p {
+    font-size: 15px;
+    color: #b8909a;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 32px 0;
+  }
+  .divider-line { flex: 1; height: 0.5px; background: #3d1e28; }
+  .divider-dot { width: 4px; height: 4px; border-radius: 50%; background: #c9849a; }
+
+  .section-title {
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #c9849a;
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+
+  /* Affirmation Card */
+  .affirmation-card {
+    background: linear-gradient(135deg, #2d1020 0%, #1f0a15 100%);
+    border: 0.5px solid #4a2030;
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, border-color 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .affirmation-card::before {
+    content: '';
+    position: absolute; top: -40px; right: -40px;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle, rgba(201, 132, 154, 0.12) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .affirmation-card:hover { transform: translateY(-2px); border-color: #7a3050; }
+  .affirmation-icon { font-size: 28px; margin-bottom: 12px; display: block; }
+  .affirmation-text {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 22px;
+    line-height: 1.45;
+    color: #f0d5dc;
+    margin-bottom: 12px;
+  }
+  .affirmation-hint { font-size: 12px; color: #7a5060; letter-spacing: 1px; }
+
+  /* Mood grid */
+  .mood-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .mood-card {
+    background: #1f0a15;
+    border: 0.5px solid #3a1825;
+    border-radius: 16px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .mood-card:hover { border-color: #6a2540; transform: translateY(-1px); }
+  .mood-card.active { border-color: #c9849a; background: #2a1020; }
+  .mood-card-icon { font-size: 24px; margin-bottom: 8px; display: block; }
+  .mood-card-title { font-weight: 500; font-size: 14px; color: #f0d5dc; margin-bottom: 4px; }
+  .mood-card-desc { font-size: 12px; color: #7a5060; line-height: 1.5; }
+
+  .mood-response {
+    background: #1f0a15;
+    border: 0.5px solid #4a2030;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+    display: none;
+    animation: fadeUp 0.4s ease;
+  }
+  .mood-response.visible { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .mood-response-text {
+    font-family: 'Instrument Serif', serif;
+    font-size: 17px;
+    line-height: 1.7;
+    color: #f0d5dc;
+  }
+
+  /* Warmth activities */
+  .activities {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .activity-pill {
+    background: #1f0a15;
+    border: 0.5px solid #3a1825;
+    border-radius: 100px;
+    padding: 10px 14px;
+    text-align: center;
+    font-size: 12px;
+    color: #c9849a;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 400;
+  }
+  .activity-pill:hover { background: #2d1020; border-color: #6a2540; color: #f0d5dc; }
+  .activity-pill.done { background: #3d1525; border-color: #c9849a; color: #f0d5dc; }
+  .activity-pill span { display: block; font-size: 18px; margin-bottom: 4px; }
+
+  /* Breath */
+  .breath-section {
+    background: #1f0a15;
+    border: 0.5px solid #3a1825;
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .breath-circle {
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    border: 1px solid #c9849a;
+    margin: 20px auto;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: #c9849a;
+    cursor: pointer;
+    transition: transform 0.1s;
+    position: relative;
+  }
+  .breath-circle::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 0.5px solid #4a2030;
+    animation: breathPulse 4s ease-in-out infinite;
+  }
+  @keyframes breathPulse {
+    0%, 100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.15); opacity: 0.7; }
+  }
+  .breath-circle.inhale { animation: inhaleCircle 4s ease forwards; }
+  .breath-circle.exhale { animation: exhaleCircle 4s ease forwards; }
+  @keyframes inhaleCircle { to { transform: scale(1.4); } }
+  @keyframes exhaleCircle { from { transform: scale(1.4); } to { transform: scale(1); } }
+
+  .breath-phase {
+    font-size: 13px; color: #c9849a;
+    letter-spacing: 2px; text-transform: uppercase;
+    margin-top: 8px; min-height: 20px;
+  }
+  .breath-btn {
+    background: transparent;
+    border: 0.5px solid #4a2030;
+    color: #c9849a;
+    padding: 10px 28px;
+    border-radius: 100px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 16px;
+  }
+  .breath-btn:hover { background: #2d1020; border-color: #7a3050; color: #f0d5dc; }
+
+  /* Notes */
+  .note-section {
+    background: #1f0a15;
+    border: 0.5px solid #3a1825;
+    border-radius: 20px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+  .note-textarea {
+    width: 100%;
+    background: #150610;
+    border: 0.5px solid #3a1825;
+    border-radius: 12px;
+    padding: 16px;
+    color: #f0d5dc;
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 16px;
+    line-height: 1.7;
+    resize: none;
+    outline: none;
+    margin-top: 12px;
+    min-height: 100px;
+  }
+  .note-textarea::placeholder { color: #4a2535; }
+  .note-textarea:focus { border-color: #6a2540; }
+
+  /* Closing */
+  .closing {
+    text-align: center;
+    padding: 20px 0;
+  }
+  .closing p {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 19px;
+    color: #c9849a;
+    line-height: 1.6;
+  }
+  .heart-float {
+    display: inline-block;
+    animation: heartbeat 2s ease-in-out infinite;
+    font-size: 22px;
+  }
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    20% { transform: scale(1.2); }
+    40% { transform: scale(1); }
+    60% { transform: scale(1.15); }
+  }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="container">
+
+  <div class="greeting">
+    <p class="greeting-sub">just for you</p>
+    <h1>you're doing<br>so beautifully,<br>even now</h1>
+    <p>Your body is working hard. You're allowed to rest, feel, and just be.</p>
+  </div>
+
+  <div class="divider"><div class="divider-line"></div><div class="divider-dot"></div><div class="divider-line"></div></div>
+
+  <p class="section-title">tap for a little reminder</p>
+  <div class="affirmation-card" id="affCard">
+    <span class="affirmation-icon" id="affIcon">🌸</span>
+    <p class="affirmation-text" id="affText">You deserve softness today. Every single bit of it.</p>
+    <p class="affirmation-hint">tap to see another ✦</p>
+  </div>
+
+  <div class="divider"><div class="divider-line"></div><div class="divider-dot"></div><div class="divider-line"></div></div>
+
+  <p class="section-title">how are you feeling right now?</p>
+  <div class="mood-grid">
+    <div class="mood-card" data-mood="pain" onclick="selectMood(this)">
+      <span class="mood-card-icon">🌡</span>
+      <div class="mood-card-title">Pain & cramps</div>
+      <div class="mood-card-desc">heavy, achy, need relief</div>
+    </div>
+    <div class="mood-card" data-mood="tired" onclick="selectMood(this)">
+      <span class="mood-card-icon">🌙</span>
+      <div class="mood-card-title">Exhausted</div>
+      <div class="mood-card-desc">no energy, just tired</div>
+    </div>
+    <div class="mood-card" data-mood="sad" onclick="selectMood(this)">
+      <span class="mood-card-icon">🌧</span>
+      <div class="mood-card-title">Emotional</div>
+      <div class="mood-card-desc">overwhelmed, teary</div>
+    </div>
+    <div class="mood-card" data-mood="better" onclick="selectMood(this)">
+      <span class="mood-card-icon">🌤</span>
+      <div class="mood-card-title">A little better</div>
+      <div class="mood-card-desc">slowly getting there</div>
+    </div>
+  </div>
+
+  <div class="mood-response" id="moodResponse">
+    <p class="mood-response-text" id="moodText"></p>
+  </div>
+
+  <div class="divider"><div class="divider-line"></div><div class="divider-dot"></div><div class="divider-line"></div></div>
+
+  <p class="section-title">tiny acts of care</p>
+  <div class="activities">
+    <div class="activity-pill" onclick="toggleActivity(this)"><span>☕</span>warm drink</div>
+    <div class="activity-pill" onclick="toggleActivity(this)"><span>🛁</span>hot bath</div>
+    <div class="activity-pill" onclick="toggleActivity(this)"><span>🎵</span>soft music</div>
+    <div class="activity-pill" onclick="toggleActivity(this)"><span>🍫</span>chocolate</div>
+    <div class="activity-pill" onclick="toggleActivity(this)"><span>🧸</span>blanket fort</div>
+    <div class="activity-pill" onclick="toggleActivity(this)"><span>📺</span>comfort show</div>
+    <div class="activity-pill" onclick="toggleActivity(this)"><span>🌿</span>gentle stretch</div>
+    <div class="activity-pill" onclick="toggleActivity(this)"><span>🕯</span>candle light</div>
+    <div class="activity-pill" onclick="toggleActivity(this)"><span>💤</span>long nap</div>
+  </div>
+
+  <div class="divider"><div class="divider-line"></div><div class="divider-dot"></div><div class="divider-line"></div></div>
+
+  <div class="breath-section">
+    <p class="section-title" style="text-align:center; margin-bottom:4px;">breathing space</p>
+    <p style="font-size:13px; color:#7a5060; text-align:center;">slow breathing can ease cramps & calm your nervous system</p>
+    <div class="breath-circle" id="breathCircle">breathe</div>
+    <p class="breath-phase" id="breathPhase"></p>
+    <button class="breath-btn" id="breathBtn" onclick="startBreath()">start breathing</button>
+  </div>
+
+  <div class="divider"><div class="divider-line"></div><div class="divider-dot"></div><div class="divider-line"></div></div>
+
+  <div class="note-section">
+    <p class="section-title">write it out</p>
+    <p style="font-size:13px; color:#7a5060;">feelings don't need to make sense. just let them out here.</p>
+    <textarea class="note-textarea" placeholder="I feel... I wish... today is..."></textarea>
+  </div>
+
+  <div class="divider"><div class="divider-line"></div><div class="divider-dot"></div><div class="divider-line"></div></div>
+
+  <div class="closing">
+    <span class="heart-float">♥</span>
+    <p style="margin-top:12px;">This too shall pass, and you'll bloom<br>even more beautifully after.</p>
+    <p style="font-size:13px; color:#7a5060; margin-top:12px; font-family:'DM Sans';">made with love, just for you</p>
+  </div>
+
+</div>
+
+<script>
+const affirmations = [
+  { text: "You deserve softness today. Every single bit of it.", icon: "🌸" },
+  { text: "Your pain is real, your feelings are valid, and you matter so deeply.", icon: "🌙" },
+  { text: "Rest is not laziness. Rest is how you come back to yourself.", icon: "🕊" },
+  { text: "You are not falling apart. You are doing something incredibly hard.", icon: "✨" },
+  { text: "Your body is doing its work. You don't have to do anything else right now.", icon: "🌿" },
+  { text: "Even on hard days, you are so so loved.", icon: "♥" },
+  { text: "Be as gentle with yourself as you would be with someone you love.", icon: "🌷" },
+  { text: "It's okay to just exist today. That's enough.", icon: "☁" },
+  { text: "Warmth and softness — that's what you deserve right now.", icon: "🕯" },
+  { text: "You carry yourself with such grace, even when it doesn't feel that way.", icon: "🌺" },
+];
+
+const moodMessages = {
+  pain: "I know it hurts right now. 💛 Try placing a warm compress or heating pad on your lower belly. Curling into a comfortable position with your knees pulled up can also help. You don't have to power through — rest is the most loving thing you can do for yourself today.",
+  tired: "Your body is using so much energy right now. 🌙 Please lie down, close your eyes, and let yourself rest without guilt. You don't owe anyone productivity today. Sleep is medicine. Warmth is medicine. You are allowed to simply be.",
+  sad: "Everything feels heavier during this time, and that's completely real — it's not just in your head. 🌧 You're allowed to cry, to feel it all. Emotions move through us like weather. This cloud will pass, and you'll feel clearer skies again. You're not alone in this.",
+  better: "Even a tiny bit better is worth celebrating. 🌤 Your body is strong and resilient. Be proud of yourself — you showed up today, and that matters. Keep doing what feels good and gentle. You're doing beautifully."
+};
+
+let affIndex = 0;
+document.getElementById('affCard').onclick = () => {
+  affIndex = (affIndex + 1) % affirmations.length;
+  const aff = affirmations[affIndex];
+  const card = document.getElementById('affCard');
+  card.style.opacity = '0';
+  card.style.transform = 'translateY(6px)';
+  setTimeout(() => {
+    document.getElementById('affText').textContent = aff.text;
+    document.getElementById('affIcon').textContent = aff.icon;
+    card.style.opacity = '1';
+    card.style.transform = 'translateY(0)';
+    card.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+  }, 200);
+};
+
+function selectMood(el) {
+  document.querySelectorAll('.mood-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  const mood = el.dataset.mood;
+  const res = document.getElementById('moodResponse');
+  document.getElementById('moodText').textContent = moodMessages[mood];
+  res.classList.add('visible');
+}
+
+function toggleActivity(el) {
+  el.classList.toggle('done');
+}
+
+let breathRunning = false, breathTimer = null;
+const phases = [
+  { text: 'breathe in...', dur: 4000 },
+  { text: 'hold gently...', dur: 2000 },
+  { text: 'breathe out...', dur: 5000 },
+  { text: 'rest...', dur: 2000 },
+];
+let phaseIdx = 0;
+
+function runBreath() {
+  if (!breathRunning) return;
+  const phase = phases[phaseIdx % phases.length];
+  document.getElementById('breathPhase').textContent = phase.text;
+  const circle = document.getElementById('breathCircle');
+  circle.className = 'breath-circle';
+  if (phaseIdx % 4 === 0) { setTimeout(() => { circle.className = 'breath-circle inhale'; }, 50); }
+  else if (phaseIdx % 4 === 2) { setTimeout(() => { circle.className = 'breath-circle exhale'; }, 50); }
+  phaseIdx++;
+  breathTimer = setTimeout(runBreath, phase.dur);
+}
+
+function startBreath() {
+  breathRunning = !breathRunning;
+  const btn = document.getElementById('breathBtn');
+  if (breathRunning) {
+    btn.textContent = 'stop';
+    phaseIdx = 0;
+    runBreath();
+  } else {
+    btn.textContent = 'start breathing';
+    clearTimeout(breathTimer);
+    document.getElementById('breathPhase').textContent = '';
+    document.getElementById('breathCircle').className = 'breath-circle';
+  }
+}
+
+// Stars
+const starsEl = document.getElementById('stars');
+for (let i = 0; i < 60; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  const size = Math.random() * 2 + 1;
+  s.style.cssText = `
+    width:${size}px; height:${size}px;
+    left:${Math.random()*100}%;
+    top:${Math.random()*100}%;
+    --d:${(Math.random()*4+2).toFixed(1)}s;
+    --o:${(Math.random()*0.5+0.2).toFixed(2)};
+    animation-delay:${(Math.random()*5).toFixed(1)}s;
+  `;
+  starsEl.appendChild(s);
+}
+</script>
+</body>
+</html>
